@@ -1,5 +1,5 @@
 # Default values for nginx-sample-chart.
-replicaCount: 2
+replicaCount: 1
 image:
   repository: nginx
   tag: latest
