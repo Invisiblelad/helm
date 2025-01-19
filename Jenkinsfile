@@ -63,6 +63,7 @@ pipeline {
             steps {
                 script {
                     sh """
+                    git checkout main
                     git add ./nginx/values.yaml
                     git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}"
                     git push origin main
