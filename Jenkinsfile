@@ -3,8 +3,6 @@ pipeline {
     environment {
         DOCKER_USER = credentials('dockeruser') 
         DOCKER_PWD = credentials('dockerpwd')  
-        GIT_USER   = credentials('gituser')
-        GIT_EMAIL  = credentials('gitemail') 
         COMMIT_HASH = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
     }
     stages {
@@ -65,8 +63,6 @@ pipeline {
             steps {
                 script {
                     sh """
-                    git config user.name ${GIT_USER}
-                    git config user.email ${GIT_EMAIL}
                     git add ./nginx/values.yaml
                     git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}"
                     git push origin main
