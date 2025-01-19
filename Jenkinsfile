@@ -11,7 +11,7 @@ pipeline {
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
-                    userRemoteConfigs: [[url: 'git@github.com:Invisiblelad/helm.git']]
+                    userRemoteConfigs: [[url: 'https://github.com/Invisiblelad/helm.git']]
                 ])
             }
         }
