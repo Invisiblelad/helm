@@ -59,6 +59,17 @@ pipeline {
                 }
             }
         }
+        stage('Commit and Push Changes') {
+            steps {
+                script {
+                    sh """
+                    git add ./nginx/values.yaml
+                    git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}"
+                    git push origin main
+                    """
+                }
+            }
+        }
     }
 }
 
