@@ -46,7 +46,7 @@ pipeline {
         stage('Update Helm Values') {
             steps {
                 script {
-                    def valuesFile = 'values.yaml'
+                    def valuesFile = 'nginx/values.yaml'
                     sh """
                     sed -i 's|tag:.*|tag: ${COMMIT_HASH}|g' ${valuesFile}
                     """
