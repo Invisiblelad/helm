@@ -1,7 +1,7 @@
 # Default values for nginx-sample-chart.
 replicaCount: 2
 image:
-  repository: nginx
+  repository: app
   tag: latest
 resources:
   limits:
