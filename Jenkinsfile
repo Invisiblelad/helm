@@ -48,7 +48,7 @@ pipeline {
                 script {
                     def valuesFile = 'nginx/values.yaml'
                     sh """
-                    sed -i 's|tag:.*|tag: ${COMMIT_HASH}|g' ${valuesFile}
+                    sed -i 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}
                     """
                 }
             }
