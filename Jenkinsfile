@@ -48,10 +48,14 @@ pipeline {
                 script {
                     def valuesFile = './nginx/values.yaml'
                     sh """
-                    sed -i '' 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}
+                    echo "File path verification:"
+                    ls -la ${valuesFile}
+                    echo "Contents before update:"
+                    cat ${valuesFile}
+                    sed -i 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}
+                    echo "Contents after update:"
                     cat ${valuesFile}
                     """
-
                 }
             }
         }
