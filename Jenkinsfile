@@ -66,6 +66,7 @@ pipeline {
                                                      usernameVariable: 'GIT_USERNAME', 
                                                      passwordVariable: 'GIT_PASSWORD')]) {
                         sh """
+                        git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
                         git add ./nginx/values.yaml
                         git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main
