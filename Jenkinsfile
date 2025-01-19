@@ -62,14 +62,17 @@ pipeline {
         stage('Commit and Push Changes') {
             steps {
                 script {
-                    sh """
-                    git add ./nginx/values.yaml
-                    git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}"
-                    git push origin main
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'git_creds_id', 
+                                                     usernameVariable: 'GIT_USERNAME', 
+                                                     passwordVariable: 'GIT_PASSWORD')]) {
+                        sh """
+                        git add ./nginx/values.yaml
+                        git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main
+                        """
+                    }
                 }
             }
-        }
     }
 }
 
