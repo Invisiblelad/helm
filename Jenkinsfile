@@ -65,7 +65,7 @@ pipeline {
                     sh """
                     git add ./nginx/values.yaml
                     git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}"
-                    git push origin 
+                    git push origin main
                     """
                 }
             }
