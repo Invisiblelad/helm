@@ -1,29 +1,46 @@
 pipeline {
     agent any
     environment {
+        DOCKER_USER = credentials('dockeruser') 
+        DOCKER_PWD = credentials('dockerpwd')  
         COMMIT_HASH = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
     }
     stages {
         stage('Git Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Invisiblelad/helm.git']])
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[url: 'https://github.com/Invisiblelad/helm.git']]
+                ])
+            }
+        }
+        stage('Get Commit Hash') {
+            steps {
+                script {
+                    env.COMMIT_HASH = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                }
             }
         }
         stage('Docker Login') {
             steps {
-                withCredentials([string(credentialsId: 'dockerpwd', variable: 'dockerpwd')]) {
-                    sh "docker login -u ${dockeruser} -p ${dockerpwd}"
+                script {
+                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}"
                 }
             }
         }
         stage('Docker Build') {
             steps {
-                sh "docker build -t ${dockeruser}/app:${COMMIT_HASH} ."
+                script {
+                    sh "docker build -t ${DOCKER_USER}/app:${COMMIT_HASH} ."
+                }
             }
         }
         stage('Docker Push') {
             steps {
-                sh "docker push ${dockeruser}/app:${COMMIT_HASH}"
+                script {
+                    sh "docker push ${DOCKER_USER}/app:${COMMIT_HASH}"
+                }
             }
         }
         stage('Update Helm Values') {
@@ -38,4 +55,6 @@ pipeline {
         }
     }
 }
+
+                
 
