@@ -3,9 +3,9 @@ replicaCount: 2
 image:
   repository: app
 <<<<<<< Updated upstream
-  tag: 8500576
+  tag: 4cacf6e
 =======
-  tag: 8500576
+  tag: 4cacf6e
 >>>>>>> Stashed changes
 resources:
   limits:
