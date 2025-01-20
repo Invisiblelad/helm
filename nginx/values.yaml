@@ -2,7 +2,15 @@
 replicaCount: 2
 image:
   repository: app
+<<<<<<< Updated upstream
   tag: 4cacf6e
+=======
+<<<<<<< Updated upstream
+  tag: 44d5d30
+=======
+  tag: 44d5d30
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 resources:
   limits:
     memory: "150Mi"
