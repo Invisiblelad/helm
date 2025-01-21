@@ -72,8 +72,13 @@ pipeline {
                         git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
                         git stash pop || echo "No stashed changes to apply"                
                         git add ./nginx/values.yaml
-                        git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH} [ci skip] " || echo "No changes to commit"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
+                        COMMIT_MESSAGE=\$(git log -1 --pretty=%B)
+                        if [[ "\${COMMIT_MESSAGE}" != *"[ci skip]"* ]]; then
+                            git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes to commit"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
+                        else
+                            echo "Commit contains '[ci skip]', skipping push."
+                        fi
                         """
                     }
                 }
