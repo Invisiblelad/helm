@@ -5,7 +5,7 @@ image:
   tag: 2aa3e54
 resources:
   limits:
-    memory: "150Mi"
+    memory: "125Mi"
     cpu: "500m"
 service:
   type: ClusterIP
