@@ -15,10 +15,14 @@ pipeline {
                 ])
             }
         }
-        stage('Get Commit Hash') {
+        stage('Check Commit') {
             steps {
                 script {
-                    env.COMMIT_HASH = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    def lastCommit = sh(script: "git log -1 --format=%H", returnStdout: true).trim()
+                    if (lastCommit == COMMIT_HASH) {
+                        echo "This commit has already been processed. Skipping build."
+                        return
+                    }
                 }
             }
         }
@@ -48,13 +52,7 @@ pipeline {
                 script {
                     def valuesFile = './nginx/values.yaml'
                     sh """
-                    echo "File path verification:"
-                    ls -la ${valuesFile}
-                    echo "Contents before update:"
-                    cat ${valuesFile}
                     sed -i 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}
-                    echo "Contents after update:"
-                    cat ${valuesFile}
                     """
                 }
             }
@@ -72,26 +70,17 @@ pipeline {
                         git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
                         git stash pop || echo "No stashed changes to apply"                
                         git add ./nginx/values.yaml
-                        git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes to commit"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
+                        COMMIT_MESSAGE=\$(git log -1 --pretty=%B)
+                        if [[ "\${COMMIT_MESSAGE}" != *"[ci skip]"* ]]; then
+                            git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes to commit"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
+                        else
+                            echo "Commit contains '[ci skip]', skipping push."
+                        fi
                         """
                     }
                 }
             }
         }
-        stage('Check Commit Message') {
-            steps {
-                script {
-                    def commitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-                    if (commitMessage.contains('[ci skip]')) {
-                       echo "Commit contains '[ci skip]', skipping build."
-                       return
-            }
-        }
     }
 }
-}
-}
-
-                
-
