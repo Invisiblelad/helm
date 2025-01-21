@@ -77,6 +77,7 @@ pipeline {
                         else
                             echo "Commit contains '[ci skip]', skipping push."
                         fi
+                        """
                     }
                 }
             }
