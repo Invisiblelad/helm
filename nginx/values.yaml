@@ -2,7 +2,7 @@
 replicaCount: 2
 image:
   repository: invisiblelad/app
-  tag: a581857
+  tag: e2e458b
 resources:
   limits:
     memory: "125Mi"
