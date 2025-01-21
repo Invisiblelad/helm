@@ -82,7 +82,7 @@ pipeline {
                     sh """
                     git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
                     git stash || echo "No changes to stash"
-                    git checkout main
+                    git checkout test
                     git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
                     git stash pop || echo "No stashed changes to apply"   
                     git add ./nginx/values.yaml
