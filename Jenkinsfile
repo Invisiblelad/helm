@@ -10,7 +10,7 @@ pipeline {
             steps {
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/main']],
+                    branches: [[name: '*/test']],
                     userRemoteConfigs: [[url: 'https://github.com/Invisiblelad/helm.git']]
                 ])
             }
