@@ -15,14 +15,14 @@ pipeline {
                 ])
             }
         }
-        stage('Check Commit Source') {
+        stage('Prevent Self-trigger') {
             steps {
                 script {
-                    def lastCommit = sh(script: "git log -1 --format=%H", returnStdout: true).trim()
-                    def commitAuthor = sh(script: "git log -1 --format=%an", returnStdout: true).trim()
-                    if (lastCommit == COMMIT_HASH && commitAuthor == 'Jenkins') {
-                        echo "This commit was made by Jenkins. Skipping build."
-                        return
+                    def lastCommitAuthor = sh(script: 'git log -1 --pretty=format:"%an"', returnStdout: true).trim()
+                    if (lastCommitAuthor == "Jenkins") {
+                        echo "Commit made by Jenkins. Skipping pipeline to avoid a loop."
+                        currentBuild.result = 'SUCCESS'
+                        error("Stopping pipeline to prevent a loop.")
                     }
                 }
             }
