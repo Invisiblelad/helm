@@ -26,6 +26,18 @@ pipeline {
                 }
             }
         }
+        stage('Prevent Self-trigger') {
+            steps {
+                script {
+                    def lastCommitAuthor = sh(script: 'git log -1 --pretty=format:"%an"', returnStdout: true).trim()
+                    if (lastCommitAuthor == "Jenkins") {
+                        echo "Commit made by Jenkins. Skipping pipeline to avoid a loop."
+                        currentBuild.result = 'SUCCESS'
+                        error("Stopping pipeline to prevent a loop.")
+                    }
+                }
+            }
+        }
         stage('Docker Login') {
             steps {
                 script {
