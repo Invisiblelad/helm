@@ -48,27 +48,17 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    def hasChanges = sh(script: "git status --porcelain", returnStdout: true).trim()
-                    if (hasChanges) {
                         sh "docker build -t ${DOCKER_USER}/app:${COMMIT_HASH} ."
-                    } else {
-                        echo "No changes detected for Docker build."
-                    }
                 }
             }
         }
         stage('Docker Push') {
             steps {
                 script {
-                    def hasChanges = sh(script: "git status --porcelain", returnStdout: true).trim()
-                    if (hasChanges) {
                         sh "docker push ${DOCKER_USER}/app:${COMMIT_HASH}"
-                    } else {
-                        echo "No changes detected for Docker push."
-                    }
-                }
             }
         }
+        }      
         stage('Update Helm Values') {
             steps {
                 script {
