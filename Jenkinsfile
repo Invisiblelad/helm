@@ -61,11 +61,14 @@ pipeline {
             steps {
                 script {
                     def valuesFile = './nginx/values.yaml'
-                    sh """
-                    sed -i 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}
-                    """
+                    def helmValuesUpdated = sh(script: "grep -q 'tag: ${COMMIT_HASH}' ${valuesFile}", returnStatus: true)
+                    if (helmValuesUpdated != 0) {
+                        sed -i 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}
+                    }else {
+                        echo "Helm values already updated with the current commit."
                 }
             }
+        }
         }
         stage('Commit and Push Changes') {
             steps {
