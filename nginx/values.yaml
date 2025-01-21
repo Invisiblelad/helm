@@ -9,5 +9,5 @@ resources:
     cpu: "500m"
 service:
   type: ClusterIP
-  port: 80
+  port: 5000
 
