@@ -74,7 +74,21 @@ pipeline {
     }
     post {
         always {
-            echo 'Pipeline completed.'
+            script {
+                // Push the updated Helm chart values to GitHub repository
+                withCredentials([usernamePassword(credentialsId: 'git_creds_id', 
+                                                 usernameVariable: 'GIT_USERNAME', 
+                                                 passwordVariable: 'GIT_PASSWORD')]) {
+                    sh """
+                    git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
+                    git checkout main
+                    git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
+                    git add ./nginx/values.yaml
+                    git commit -m "Updated the helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
+                    git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
+                    """
+                }
+            }
         }
     }
 }
