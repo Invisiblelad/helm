@@ -15,17 +15,6 @@ pipeline {
                 ])
             }
         }
-        stage('Check Commit') {
-            steps {
-                script {
-                    def lastCommit = sh(script: "git log -1 --format=%H", returnStdout: true).trim()
-                    if (lastCommit == COMMIT_HASH) {
-                        echo "This commit has already been processed. Skipping build."
-                        return
-                    }
-                }
-            }
-        }
         stage('Prevent Self-trigger') {
             steps {
                 script {
@@ -34,6 +23,17 @@ pipeline {
                         echo "Commit made by Jenkins. Skipping pipeline to avoid a loop."
                         currentBuild.result = 'SUCCESS'
                         error("Stopping pipeline to prevent a loop.")
+                    }
+                }
+            }
+        }
+        stage('Check Commit') {
+            steps {
+                script {
+                    def lastCommit = sh(script: "git log -1 --format=%H", returnStdout: true).trim()
+                    if (lastCommit == COMMIT_HASH) {
+                        echo "This commit has already been processed. Skipping build."
+                        return
                     }
                 }
             }
