@@ -36,14 +36,24 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_USER}/app:${COMMIT_HASH} ."
+                    def hasChanges = sh(script: "git status --porcelain", returnStdout: true).trim()
+                    if (hasChanges) {
+                        sh "docker build -t ${DOCKER_USER}/app:${COMMIT_HASH} ."
+                    } else {
+                        echo "No changes detected for Docker build."
+                    }
                 }
             }
         }
         stage('Docker Push') {
             steps {
                 script {
-                    sh "docker push ${DOCKER_USER}/app:${COMMIT_HASH}"
+                    def hasChanges = sh(script: "git status --porcelain", returnStdout: true).trim()
+                    if (hasChanges) {
+                        sh "docker push ${DOCKER_USER}/app:${COMMIT_HASH}"
+                    } else {
+                        echo "No changes detected for Docker push."
+                    }
                 }
             }
         }
@@ -70,13 +80,8 @@ pipeline {
                         git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
                         git stash pop || echo "No stashed changes to apply"                
                         git add ./nginx/values.yaml
-                        COMMIT_MESSAGE=\$(git log -1 --pretty=%B)
-                        if [[ "\${COMMIT_MESSAGE}" != *"[ci skip]"* ]]; then
-                            git commit -m "Updated the helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
-                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
-                        else
-                            echo "Commit contains '[ci skip]', skipping push."
-                        fi
+                        git commit -m "Updated the helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
                         """
                     }
                 }
