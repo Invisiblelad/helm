@@ -81,8 +81,10 @@ pipeline {
                                                  passwordVariable: 'GIT_PASSWORD')]) {
                     sh """
                     git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
+                    git stash || echo "No changes to stash"
                     git checkout main
                     git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
+                    git stash pop || echo "No stashed changes to apply"   
                     git add ./nginx/values.yaml
                     git commit -m "Updated the helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
                     git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
