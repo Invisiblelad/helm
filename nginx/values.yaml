@@ -3,12 +3,12 @@ replicaCount: 2
 image:
   repository: app
 <<<<<<< Updated upstream
-  tag: 0e89762
+  tag: 295d565
 =======
 <<<<<<< Updated upstream
-  tag: 0e89762
+  tag: 295d565
 =======
-  tag: 0e89762
+  tag: 295d565
 >>>>>>> Stashed changes
 >>>>>>> Stashed changes
 resources:
