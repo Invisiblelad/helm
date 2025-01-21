@@ -4,12 +4,16 @@ image:
   repository: app
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   tag: b6f754c
 =======
   tag: b38b61f
 >>>>>>> Stashed changes
 =======
   tag: b38b61f
+>>>>>>> Stashed changes
+=======
+  tag: b8e4c22
 >>>>>>> Stashed changes
 resources:
   limits:
