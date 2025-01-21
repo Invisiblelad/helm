@@ -1,7 +1,7 @@
 # Default values for nginx-sample-chart.
 replicaCount: 2
 image:
-  repository: app
+  repository: invisiblelad/app
   tag: dd611f8
 resources:
   limits:
