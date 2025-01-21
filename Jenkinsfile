@@ -66,16 +66,8 @@ pipeline {
                                                      usernameVariable: 'GIT_USERNAME', 
                                                      passwordVariable: 'GIT_PASSWORD')]) {
                         sh """
-                        git config user.email "jenkins@yourdomain.com"
-                        git config user.name "Jenkins CI"
-                        git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
-                        # Safely stash local changes if any
-                        git stash || echo "No changes to stash"
-                        git checkout main
-                        git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
-                        git stash pop || echo "No stashed changes to apply"
                         git add ./nginx/values.yaml
-                        git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH}" || echo "No changes to commit"
+                        git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes to commit"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main
                         """
                     }
