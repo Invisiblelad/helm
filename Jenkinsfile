@@ -72,7 +72,7 @@ pipeline {
                         git add ./nginx/values.yaml
                         COMMIT_MESSAGE=\$(git log -1 --pretty=%B)
                         if [[ "\${COMMIT_MESSAGE}" != *"[ci skip]"* ]]; then
-                            git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
+                            git commit -m "Updated values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
                         else
                             echo "Commit contains '[ci skip]', skipping push."
