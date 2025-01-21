@@ -2,7 +2,7 @@
 replicaCount: 2
 image:
   repository: app
-  tag: 303992f
+  tag: 97ee821
 resources:
   limits:
     memory: "150Mi"
