@@ -15,12 +15,13 @@ pipeline {
                 ])
             }
         }
-        stage('Check Commit') {
+        stage('Check Commit Source') {
             steps {
                 script {
                     def lastCommit = sh(script: "git log -1 --format=%H", returnStdout: true).trim()
-                    if (lastCommit == COMMIT_HASH) {
-                        echo "This commit has already been processed. Skipping build."
+                    def commitAuthor = sh(script: "git log -1 --format=%an", returnStdout: true).trim()
+                    if (lastCommit == COMMIT_HASH && commitAuthor == 'Jenkins') {
+                        echo "This commit was made by Jenkins. Skipping build."
                         return
                     }
                 }
@@ -63,32 +64,42 @@ pipeline {
                     def valuesFile = './nginx/values.yaml'
                     def helmValuesUpdated = sh(script: "grep -q 'tag: ${COMMIT_HASH}' ${valuesFile}", returnStatus: true)
                     if (helmValuesUpdated != 0) {
-                        sed -i 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}
-                    }else {
+                        sh "sed -i 's|^\\(\\s*tag:\\).*|\\1 ${COMMIT_HASH}|' ${valuesFile}"
+                    } else {
                         echo "Helm values already updated with the current commit."
+                    }
                 }
             }
-        }
         }
         stage('Commit and Push Changes') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'git_creds_id', 
-                                                     usernameVariable: 'GIT_USERNAME', 
-                                                     passwordVariable: 'GIT_PASSWORD')]) {
-                        sh """
-                        git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
-                        git stash || echo "No changes to stash"
-                        git checkout main
-                        git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
-                        git stash pop || echo "No stashed changes to apply"                
-                        git add ./nginx/values.yaml
-                        git commit -m "Updated the helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
-                        """
+                    def changesDetected = sh(script: "git status --porcelain", returnStdout: true).trim()
+                    if (changesDetected) {
+                        withCredentials([usernamePassword(credentialsId: 'git_creds_id', 
+                                                         usernameVariable: 'GIT_USERNAME', 
+                                                         passwordVariable: 'GIT_PASSWORD')]) {
+                            sh """
+                            git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
+                            git stash || echo "No changes to stash"
+                            git checkout main
+                            git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --rebase
+                            git stash pop || echo "No stashed changes to apply"                
+                            git add ./nginx/values.yaml
+                            git commit -m "Updated Helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes commit"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git main --push-option=ci.skip
+                            """
+                        }
+                    } else {
+                        echo "No changes detected in Helm chart."
                     }
                 }
             }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline completed.'
         }
     }
 }
