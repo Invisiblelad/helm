@@ -2,7 +2,11 @@
 replicaCount: 2
 image:
   repository: invisiblelad/app
+<<<<<<< Updated upstream
   tag: 81759b0
+=======
+  tag: afcae04
+>>>>>>> Stashed changes
 resources:
   limits:
     memory: "125Mi"
