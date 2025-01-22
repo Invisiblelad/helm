@@ -7,6 +7,8 @@ resources:
   limits:
     memory: "125Mi"
     cpu: "500m"
+container:
+  port: 5000
 service:
   type: ClusterIP
   port: 80
