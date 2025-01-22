@@ -11,6 +11,6 @@ container:
   port: 5000
 service:
   type: ClusterIP
-  port: 80
+  port: 5000
   targetPort: 5000
 
